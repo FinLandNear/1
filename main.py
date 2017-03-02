@@ -6,7 +6,10 @@
 """
 
 import telebot
+import answers
 import constants
+import time
+
 
 bot = telebot.TeleBot(constants.token)
 
@@ -36,25 +39,52 @@ def handle_start(message):
     user_markup.row('/start', '/help', '/stop')
     user_markup.row('Организовать', 'Присоединиться')
     user_markup.row('Ответы на вопросы')
-    bot.send_message(message.from_user.id, 'Приветствую, выберите что Вам сейчас интересно', reply_markup=user_markup)
+    bot.send_message(message.from_user.id, answers.answers0[0], reply_markup=user_markup)
 
 @bot.message_handler(commands=['stop'])
 def handle_start(message):
     hide_markup = telebot.types.ReplyKeyboardRemove ()
-    bot.send_message(message.from_user.id, '..', reply_markup=hide_markup)
+    bot.send_message(message.from_user.id, answers.answers0[1], reply_markup=hide_markup)
 
 @bot.message_handler(content_types=['text'])
 def handle_text(message):
     if message.text == "Ответы на вопросы":
-        bot.send_message(message.from_user.id, """\r
-        Да - да, смело спрашивайте, о чем угодно!')
+        counter = 0
+        max_answers = len(answers.answers1) - 1
+        while counter <= max_answers:
+            answer = answers.answers1[counter]
+            bot.send_message(message.from_user.id, answer)
+            time.sleep(3)
+            counter = counter + 1
+    elif message.text == "Организовать":
+        bot.send_message(message.from_user.id, answers.answers2[0])
+        time.sleep(2)
+        user_markup = telebot.types.ReplyKeyboardMarkup(True, True)
+        user_markup.row('Да', 'Нет', 'Подробнее')
+        bot.send_message(message.from_user.id, answers.answers2[1], reply_markup=user_markup)
+    elif message.text == "Да":
+            time.sleep(2)
+            bot.send_message(message.from_user.id, answers.answers3[0])
+        #вот тут надо бы написать случайное распределение всех воскресений в году, так сказать живая очередь
+        #Да и вообще тут будет куча кода, реплик, так еще и их все записывать нужно в какоё-то лог
 
 
 
 
 
+
+
+
+    elif message.text == "Нет":
+            time.sleep(2)
+            bot.send_message(message.from_user.id, answers.answers4[0])
+            time.sleep(2)
+            hide_markup = telebot.types.ReplyKeyboardRemove()
+            bot.send_message(message.from_user.id, answers.answers4[1], reply_markup=hide_markup)
 
 bot.polling(none_stop=True, interval=0)
+
+
 
 
 
